@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Generated scanner output (contains strings extracted from binaries)"
+paths = ['''security/reports/''', '''build/''', '''\.dart_tool/''']

@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: osv-scanner
+        uses: google/osv-scanner-action/osv-scanner-action@98b584ee2ed2da3935ccce10e06739d54cdcd20b # v2.0.0
+        with:
+          scan-args: --lockfile=pubspec.lock
+      - name: semgrep
+        run: |
+          pipx install semgrep==1.182.0
+          semgrep scan --metrics=off --error \
+            --config p/secrets --config p/owasp-top-ten --config p/swift --config r/dart \
+            --exclude build --exclude .dart_tool .

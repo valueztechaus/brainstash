@@ -1,0 +1,54 @@
+name: brainstash
+description: "Brain-dump inbox for product, service and problem ideas"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  hive_ce: 2.22.0
+  flutter_secure_storage: 11.2.0
+  local_auth: 3.0.2
+  share_plus: 13.3.1
+  path_provider: 2.1.6
+  uuid: 4.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+
+  flutter_lints: 6.0.0
+  flutter_launcher_icons: 0.14.4
+
+flutter:
+
+  uses-material-design: true
+  fonts:
+    - family: FiraSans
+      fonts:
+        - asset: assets/fonts/FiraSans-Regular.ttf
+        - asset: assets/fonts/FiraSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/FiraSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/FiraSans-Bold.ttf
+          weight: 700
+    - family: FiraCode
+      fonts:
+        - asset: assets/fonts/FiraCode.ttf
+
+flutter_launcher_icons:
+  ios: true
+  android: false
+  image_path: assets/icon/icon-1024.png
+  remove_alpha_ios: true
+
