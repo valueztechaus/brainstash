@@ -77,7 +77,7 @@ lib/
   screens/                  inbox, capture sheet, detail, settings
   widgets/                  idea card, segmented choice, stage picker, brand mark
 test/                       unit + widget tests
-docs/                       spec, plan, decisions, App Store guide, token report
+docs/                       spec, plan, decisions, status, design source, article, App Store guide, token report
 security/                   scan reports
 tools/                      security_scan.sh, token_report.py
 ```
@@ -86,7 +86,7 @@ tools/                      security_scan.sh, token_report.py
 
 This app was designed (Claude Design), coded, tested, security-scanned and documented end to
 end by Claude Code running Claude Opus 5.5. Every decision is in
-[docs/DECISIONS.md](docs/DECISIONS.md); token usage is in [docs/TOKENS.md](docs/TOKENS.md).
+[docs/DECISIONS.md](docs/DECISIONS.md); token usage is in [docs/TOKENS.md](docs/TOKENS.md); current state and how to resume are in [docs/STATUS.md](docs/STATUS.md).
 
 ## Licence
 

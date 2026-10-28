@@ -1,0 +1,206 @@
+<title>Idea to iPhone in an Afternoon</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: white masthead plate, one reading column, timeline rail and token ledger as the two set pieces. Valueztech brand palette. */
+  :root {
+    --blue: #1e5a8e;
+    --blue-2: #2d7ab8;
+    --gold: #e8b443;
+    --bg: #ffffff;
+    --band: #f5f7fa;
+    --ink: #1a1a1a;
+    --body: #4d5560;
+    --muted: #666666;
+    --rule: #dde3ea;
+    --plate: #ffffff;
+    --heading: #1e5a8e;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1620; --band: #142030; --ink: #eef2f6; --body: #c3ccd6; --muted: #93a0ae;
+      --rule: #24364a; --heading: #7fb4e3; --blue-2: #5a9ad0; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1620; --band: #142030; --ink: #eef2f6; --body: #c3ccd6; --muted: #93a0ae;
+    --rule: #24364a; --heading: #7fb4e3; --blue-2: #5a9ad0; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--body); font-family: var(--font); font-size: 17px; line-height: 1.7; }
+  .wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  a { color: var(--blue-2); text-underline-offset: 3px; }
+  a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .mast { background: var(--blue); }
+  .mast .wrap { padding-block: 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .plate { background: var(--plate); border-radius: 8px; padding: 10px 14px; display: inline-flex; }
+  .plate img { height: 56px; width: auto; display: block; }
+  .mast .kicker { color: #ffffff; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; opacity: 0.9; }
+
+  header.hero .wrap { padding-block: 48px 8px; }
+  .eyebrow { font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 0 0 14px; }
+  h1 { font-size: clamp(32px, 5.4vw, 48px); line-height: 1.12; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 18px; font-weight: 800; text-wrap: balance; }
+  h1 em { font-style: normal; color: var(--heading); }
+  .byline { display: flex; gap: 10px 18px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin: 0 0 8px; }
+  .byline b { color: var(--ink); font-weight: 600; }
+
+  .clock { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; margin: 32px 0 8px; }
+  .clock div { background: var(--bg); padding: 16px 18px; }
+  .clock .t { font-family: var(--mono); font-size: clamp(22px, 4vw, 30px); font-weight: 500; color: var(--heading); font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .clock .l { font-size: 13px; color: var(--muted); line-height: 1.4; margin-top: 4px; }
+
+  article .wrap { padding-block: 16px 40px; }
+  article p { margin: 0 0 1.1em; max-width: 66ch; }
+  h2 { font-size: 24px; letter-spacing: -0.01em; color: var(--heading); margin: 2.2em 0 0.7em; font-weight: 700; text-wrap: balance; }
+  strong { color: var(--ink); font-weight: 600; }
+
+  .timeline { list-style: none; padding: 0; margin: 8px 0 24px; border-left: 2px solid var(--rule); }
+  .timeline li { position: relative; padding: 0 0 18px 24px; }
+  .timeline li::before { content: ""; position: absolute; left: -7px; top: 9px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--blue-2); }
+  .timeline li.key::before { background: var(--gold); border-color: var(--gold); }
+  .timeline time { font-family: var(--mono); font-size: 14px; color: var(--heading); font-weight: 500; font-variant-numeric: tabular-nums; display: block; line-height: 1.6; }
+  .timeline span { display: block; line-height: 1.6; }
+
+  ul.built { padding-left: 1.1em; margin: 0 0 1.2em; }
+  ul.built li { margin-bottom: 0.55em; max-width: 64ch; }
+  ul.built li::marker { color: var(--gold); }
+
+  figure.shots { margin: 28px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 220px)); gap: 20px; justify-content: center; }
+  figure.shots img { width: 100%; border-radius: 22px; border: 1px solid var(--rule); display: block; }
+  figure.shots figcaption { grid-column: 1 / -1; text-align: center; font-size: 13px; color: var(--muted); }
+
+  .ledger-wrap { overflow-x: auto; margin: 8px 0 14px; }
+  table.ledger { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 320px; }
+  table.ledger td { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  table.ledger td:last-child { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+  table.ledger tr.total td { border-bottom: 0; border-top: 2px solid var(--heading); font-weight: 700; color: var(--heading); font-size: 17px; }
+  .note { font-size: 14px; color: var(--muted); }
+
+  .callout { background: var(--band); border-radius: 10px; padding: 22px 24px; margin: 28px 0; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .sign { border-top: 1px solid var(--rule); margin-top: 36px; padding-top: 20px; font-size: 15px; line-height: 1.6; }
+  .sign .who { color: var(--ink); font-weight: 600; font-size: 16px; }
+  .sign .cred { color: var(--muted); }
+  .sign .mail { font-family: var(--mono); font-size: 14px; user-select: all; color: var(--ink); }
+
+  footer.foot { background: var(--band); border-top: 1px solid var(--rule); }
+  footer.foot .wrap { padding-block: 26px 30px; display: flex; flex-direction: column; gap: 16px; }
+  .marks { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .marks .plate { padding: 6px 10px; }
+  .marks .plate img { height: 46px; }
+  .legal { font-size: 13px; color: var(--muted); }
+
+  @media (max-width: 520px) {
+    .clock { grid-template-columns: 1fr; }
+    .plate img { height: 44px; }
+    figure.shots { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  }
+</style>
+
+<div class="mast">
+  <div class="wrap">
+    <a class="plate" href="https://www.valueztech.com"><img src="{{LOGO}}" alt="Valueztech — Maximising Asset Intelligence"></a>
+    <span class="kicker">Field notes · AI delivery</span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Case study · Brainstash for iOS</p>
+    <h1>From one message to an app on my iPhone <em>in an afternoon</em></h1>
+    <p class="byline"><span>By <b>Biplab Das Choudhury</b>, Founder &amp; Principal Consultant</span><span>28 October 2026</span></p>
+    <div class="clock">
+      <div><div class="t">47 min</div><div class="l">from brief to v1 running in the iPhone simulator</div></div>
+      <div><div class="t">4 h 35 m</div><div class="l">to five features on my own iPhone, breaks included</div></div>
+      <div><div class="t">39.9 M</div><div class="l">tokens in total, 212,651 of them written output</div></div>
+    </div>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <p>At 11:39 on a Wednesday morning I typed a single message into Claude Code. I asked for an iOS app to capture the product, service and problem ideas that come to me at odd times, so I could review them later and pick up the ones worth building. I asked for it to be designed first, built in Flutter, tested in the iOS simulator, secured and security-tested with standard tools, documented, ready for the App Store, and released as a public GitHub project. I also said: do it in one shot, use your best judgement, and record every decision.</p>
+    <p>At 12:26 the first version was running in the simulator. By 16:14 it was running on my own iPhone with voice capture, hands-free saving, voice search and photo and file attachments. The whole thing is open source at <a href="https://github.com/valueztechaus/brainstash">github.com/valueztechaus/brainstash</a>.</p>
+    <p>I want to share what actually happened, including the parts that were not automatic, because I believe this changes what Valueztech can offer our clients.</p>
+
+    <h2>The timeline</h2>
+    <p class="note">All times AEDT, 28 October 2026, from the session log and git history.</p>
+    <ol class="timeline">
+      <li class="key"><time>11:39</time><span>One message with the full brief.</span></li>
+      <li><time>11:40 – 12:20</time><span>Design in Claude Design, Flutter project, encrypted storage, tests. Xcode was not installed on my Mac, so I installed it from the App Store in parallel. That download was the longest wait of the day.</span></li>
+      <li class="key"><time>12:26</time><span><strong>v1 running in the iPhone simulator:</strong> capture, search, kinds and stages, Face ID lock, AES-256 encryption, app icon.</span></li>
+      <li><time>12:34</time><span>Security scans, App Store checklist, privacy policy, decision log and token report committed and pushed to GitHub.</span></li>
+      <li><time>12:41</time><span>I asked for voice input. Built on-device only, so audio never leaves the phone.</span></li>
+      <li><time>14:41 – 15:03</time><span>Getting it onto my iPhone. Most of this was Apple account housekeeping: accepting a new licence agreement, a bundle identifier that was already taken, replacing an old signing certificate, and trusting the Mac on the phone.</span></li>
+      <li><time>15:56 – 16:01</time><span>“Wait until I say save the idea”, plus search by voice. Five minutes from request to running on the phone.</span></li>
+      <li class="key"><time>16:05 – 16:14</time><span>Attach photos from the camera or library, or documents from Files. Nine minutes, encrypted like everything else.</span></li>
+    </ol>
+    <p>I typed about fifteen messages in total. Several of them were just “done” while I plugged in a cable or clicked a button in Xcode.</p>
+
+    <figure class="shots">
+      <img src="{{INBOX}}" alt="Brainstash inbox with idea cards, search and kind filters">
+      <img src="{{DETAIL}}" alt="Brainstash idea detail with stage picker, kind and gut feel">
+      <figcaption>Version 1 in the simulator at 12:26, captured by the automated integration test.</figcaption>
+    </figure>
+
+    <h2>What was built</h2>
+    <p>Brainstash is a small app, but it is not a demo. It has the things I would expect from a production mobile app delivered to a client:</p>
+    <ul class="built">
+      <li><strong>Encryption at rest</strong> with AES-256. The key is generated on the device and kept in the iOS Keychain, never synced to iCloud. Ideas and attachments are excluded from backups.</li>
+      <li><strong>Optional Face ID lock</strong>, with re-authentication before export or delete-all, and a privacy cover in the app switcher.</li>
+      <li><strong>No network at all.</strong> No accounts, no analytics, no crash reporting. Speech recognition is forced on-device.</li>
+      <li><strong>95 automated tests</strong>, including tests that read the raw database file to prove nothing is stored in plain text, and an integration test on the simulator that also produced the App Store screenshots.</li>
+      <li><strong>Security testing on every change</strong> with gitleaks (secrets), osv-scanner (dependency CVEs), semgrep (static analysis) and MobSF (mobile app scan of the built binary). All clean, and they run in GitHub Actions on every push.</li>
+      <li><strong>40 recorded decisions</strong>, each with the reason and the alternative that was rejected. A design spec, an implementation plan, a security report and an App Store submission checklist.</li>
+    </ul>
+
+    <h2>What it cost in tokens</h2>
+    <p>I asked Claude Code to track token usage from the start so I could be open about it. For the whole day, including every feature above:</p>
+    <div class="ledger-wrap">
+      <table class="ledger">
+        <tr><td>Output (what Claude actually wrote)</td><td>212,651</td></tr>
+        <tr><td>Fresh input</td><td>478</td></tr>
+        <tr><td>Cache writes</td><td>451,970</td></tr>
+        <tr><td>Cache reads</td><td>39,224,447</td></tr>
+        <tr class="total"><td>Total</td><td>39,889,546</td></tr>
+      </table>
+    </div>
+    <p>Nearly all of the total is cache reads. Every turn re-reads the conversation so far, and cached reads are billed at a small fraction of normal input. The full breakdown and the script that produced it are in the repository.</p>
+
+    <h2>What was not automatic</h2>
+    <p>I don't want to oversell this. A few things still needed me.</p>
+    <p><strong>Installing Xcode and Apple developer account steps.</strong> Accepting Apple's updated agreement, choosing the signing team and plugging in the phone are things only the account owner can do. Claude told me exactly what to click each time, but I had to click it.</p>
+    <p><strong>One confusing moment.</strong> After the automated simulator test, the build left on the simulator was the test build, so taps did not work. It took one message to find and fix, and a note was added to the README so others don't hit it.</p>
+    <p><strong>One oversight.</strong> The independent security review ran on a smaller model than the one I asked for, because that reviewer agent had its own default. Its findings were checked and fixed, and the slip is recorded openly in the decision log.</p>
+    <p><strong>Judgement still matters.</strong> The quality came from the brief: security, testing, documentation and an open record of decisions were in the first message. If you don't ask for them, you are less likely to get them.</p>
+
+    <h2>What this means for our clients</h2>
+    <p>In my years delivering Maximo and EAM projects, I have seen good ideas for small tools wait months for a slot in the backlog: a field inspection app, a simple capture form for crews wearing gloves, a prototype to test an idea with a few technicians before committing budget. The cost of trying was too high, so most of them were never tried.</p>
+    <div class="callout">
+      <p>That cost has dropped sharply. Valueztech can now take a well-written brief to a working, secured, tested and documented mobile app in hours, then iterate with the people who will use it on the same day. We still apply the same engineering discipline we use on enterprise projects: encryption, security scans, tests and a decision log. The difference is how quickly we get there.</p>
+    </div>
+    <p>If you have a tool your field teams have been asking for, or an idea you want to test with real users before you commit a budget, I would like to hear about it.</p>
+
+    <div class="sign">
+      <div class="who">Biplab Das Choudhury</div>
+      <div>Founder &amp; Principal Consultant, Valueztech</div>
+      <div class="cred">IBM Champion 2026 · IBM Silver Partner · AWS Certified Solutions Architect</div>
+      <div class="mail">biplabchoudhury@valueztech.com</div>
+    </div>
+  </div>
+</article>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="marks">
+      <span class="plate"><img src="{{IBM}}" alt="IBM Silver Partner"></span>
+      <span class="plate"><img src="{{CHAMP}}" alt="IBM Champion 2026"></span>
+    </div>
+    <div class="legal">Valueztech Pty Ltd · ABN 81 677 255 300 · <a href="https://www.valueztech.com">www.valueztech.com</a> · Melbourne, Australia</div>
+  </div>
+</footer>

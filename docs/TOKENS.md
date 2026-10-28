@@ -1,19 +1,19 @@
 # Token Usage — Building Brainstash with Claude Code
 
-_Generated 2026-10-28T16:14 by `tools/token_report.py`._
+_Generated 2026-10-28T16:35 by `tools/token_report.py`._
 
 - Transcripts read: **2** (main session + subagents)
-- Assistant API turns: **237**
-- Time span: 2026-10-28T00:39:27.435Z → 2026-10-28T05:14:27.649Z
-- **Grand total tokens: 39,889,546**
-  - Fresh input: 478
-  - Output: 212,651
-  - Cache writes: 451,970
-  - Cache reads: 39,224,447
+- Assistant API turns: **266**
+- Time span: 2026-10-28T00:39:27.435Z → 2026-10-28T05:35:27.518Z
+- **Grand total tokens: 46,500,359**
+  - Fresh input: 540
+  - Output: 239,496
+  - Cache writes: 504,824
+  - Cache reads: 45,755,499
 
 | Model | Input | Output | Cache write | Cache read | Total |
 |---|---|---|---|---|---|
-| claude-opus-5-5 | 468 | 207,637 | 420,197 | 39,140,620 | 39,768,922 |
+| claude-opus-5-5 | 530 | 234,482 | 473,051 | 45,671,672 | 46,379,735 |
 | claude-sonnet-5-5 | 10 | 5,014 | 31,773 | 83,827 | 120,624 |
 
 Cache reads dominate because each turn re-reads the cached conversation; they are

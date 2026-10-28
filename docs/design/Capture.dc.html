@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quick capture</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&amp;family=Fira+Code:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #07080A; font-family: 'Fira Sans', sans-serif; color: #ECEEF2; display: flex; flex-direction: column; justify-content: flex-end">
+<div style="background: #171A20; border-radius: 24px 24px 0 0; padding: 12px 20px 36px; display: flex; flex-direction: column; gap: 18px; height: 760px; box-sizing: border-box">
+<div style="width: 40px; height: 5px; border-radius: 3px; background: #3A3F4A; align-self: center"></div>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<a href="Main.dc.html" style="font-size: 16px; text-decoration: none; color: #A8AEBB; padding: 10px 0">Cancel</a>
+<span style="font-size: 17px; font-weight: 600">New idea</span>
+<a href="Main.dc.html" style="font-size: 16px; font-weight: 600; text-decoration: none; padding: 10px 0">Save</a>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-family: 'Fira Code', monospace; font-size: 12px; color: #8C93A1; letter-spacing: 1px">TITLE</span><input value="Voice-first inspection log" style="height: 48px; padding: 0 14px; border-radius: 12px; border: 1px solid #2A2E37; background: #0F1115; color: #ECEEF2; font: inherit; font-size: 18px; font-weight: 600"></label>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-family: 'Fira Code', monospace; font-size: 12px; color: #8C93A1; letter-spacing: 1px">DUMP IT HERE</span><textarea style="height: 170px; padding: 12px 14px; border-radius: 12px; border: 1px solid #2A2E37; background: #0F1115; color: #ECEEF2; font: inherit; font-size: 16px; line-height: 1.5; resize: none">Crews wear gloves, can't type. Speak notes, auto-attach to the work order. Who pays: maintenance managers.</textarea></label>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Fira Code', monospace; font-size: 12px; color: #8C93A1; letter-spacing: 1px">KIND</span>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; background: #0F1115; padding: 4px; border-radius: 12px">
+<button style="height: 40px; border-radius: 9px; border: 0; background: #F5B83D; color: #1A1406; font: inherit; font-size: 14px; font-weight: 600">Product</button>
+<button style="height: 40px; border-radius: 9px; border: 0; background: transparent; color: #C9CDD5; font: inherit; font-size: 14px">Service</button>
+<button style="height: 40px; border-radius: 9px; border: 0; background: transparent; color: #C9CDD5; font: inherit; font-size: 14px">Problem</button>
+<button style="height: 40px; border-radius: 9px; border: 0; background: transparent; color: #C9CDD5; font: inherit; font-size: 14px">Other</button>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Fira Code', monospace; font-size: 12px; color: #8C93A1; letter-spacing: 1px">GUT FEEL</span>
+<div style="display: flex; gap: 8px">
+<button aria-label="Low" style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid #2A2E37; background: transparent; color: #C9CDD5; font: inherit">Meh</button>
+<button aria-label="Medium" style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid #2A2E37; background: transparent; color: #C9CDD5; font: inherit">Good</button>
+<button aria-label="High" style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid #F5B83D; background: #2B2312; color: #F5B83D; font: inherit; font-weight: 600">Must build</button>
+</div>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-family: 'Fira Code', monospace; font-size: 12px; color: #8C93A1; letter-spacing: 1px">TAGS</span><input value="maximo, field, voice" style="height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #2A2E37; background: #0F1115; color: #ECEEF2; font: inherit; font-size: 15px"></label>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

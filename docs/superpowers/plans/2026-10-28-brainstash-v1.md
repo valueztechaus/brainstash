@@ -26,3 +26,14 @@ and public GitHub release.
 | 16 | README, SECURITY, CONTRIBUTING, LICENSE, App Store submission guide | review | ✅ |
 | 17 | Token report | `docs/TOKENS.md` | ✅ |
 | 18 | Publish public GitHub repo | URL | ✅ https://github.com/valueztechaus/brainstash |
+
+## Post-v1 increments (all ✅, 28 Oct 2026)
+
+| # | Increment | Commit |
+|---|---|---|
+| 19 | On-device voice capture | `934d60a` |
+| 20 | Bundle id `com.valueztech.brainstashapp`, team signing, installed on physical iPhone | `d04b880` |
+| 21 | Hands-free "save the idea" + voice/text search | `db31c81` |
+| 22 | Photo and file attachments (encrypted) | `6103159` |
+| 23 | Valueztech branding + website article | `7a7c35e` |
+| 24 | Project handover: design sources, article page, STATUS.md | this commit |
