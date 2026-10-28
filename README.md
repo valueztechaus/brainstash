@@ -60,7 +60,7 @@ flutter drive --driver=test_driver/integration_test.dart --target=integration_te
 > afterwards to put the normal app back on the simulator.
 
 Install on your own iPhone: open `ios/Runner.xcworkspace` in Xcode → *Signing & Capabilities* →
-pick your team → change the bundle id from `com.valueztech.brainstash` to your own → Run.
+pick your team → change the bundle id from `com.valueztech.brainstashapp` to your own → Run.
 
 Security checks: `./tools/security_scan.sh` and `./tools/mobsf_scan.sh <ipa>`
 

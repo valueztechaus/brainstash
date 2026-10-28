@@ -18,7 +18,7 @@ marked otherwise.
 | D10 | Only title required on capture | Goal: capture < 5 s. | Required kind/category |
 | D11 | Export = JSON via iOS share sheet | Lets user back up / move data without us running a server. | iCloud Drive integration |
 | D12 | Security scanners: gitleaks, osv-scanner, semgrep, MobSF | All free, widely used, scriptable; together cover secrets, dependency CVEs, SAST and mobile-binary checks. | Commercial scanners |
-| D13 | Bundle id `com.valueztech.brainstash` | Owner's company domain. | — |
+| D13 | Bundle id `com.valueztech.brainstashapp` | Owner's company domain. `com.valueztech.brainstash` was already taken in Apple's global App ID namespace, so `app` suffix added. Forks must set their own bundle id and Team in Xcode. | — |
 | D14 | MIT licence for public GitHub repo | Most permissive, simplest for others to reuse. | Apache-2.0 |
 | D15 | Token usage measured from Claude Code session JSONL logs (`tools/token_report.py`) | Exact per-message usage incl. cache reads/writes and subagents; no estimation. | Manual `/cost` snapshots |
 | D16 | Icon: amber spark dropping into a tray, 1024 px, no alpha | App Store requires opaque 1024 icon; concept = "capture the spark". | — |

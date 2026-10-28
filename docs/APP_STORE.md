@@ -7,7 +7,7 @@ Everything below is prepared except the steps that need your Apple ID (marked �
 | Item | Where | Status |
 |---|---|---|
 | App icon 1024×1024, opaque PNG | `assets/icon/icon-1024.png` (all sizes generated into `ios/Runner/Assets.xcassets`) | ✅ |
-| Bundle id | `com.valueztech.brainstash` | ✅ |
+| Bundle id | `com.valueztech.brainstashapp` | ✅ |
 | Display name | Brainstash | ✅ |
 | Version | `1.0.0 (1)` — from `pubspec.yaml` `version:` | ✅ |
 | Face ID usage string | `Info.plist` `NSFaceIDUsageDescription` | ✅ |
@@ -26,7 +26,7 @@ encryption limited to data protection, so `NO` is the usual answer. If Apple ask
 ## 2. 🔑 One-time setup in App Store Connect
 
 1. https://developer.apple.com/account/resources/identifiers → **+** → App IDs →
-   bundle id `com.valueztech.brainstash`. Enable **Data Protection** (Complete).
+   bundle id `com.valueztech.brainstashapp`. Enable **Data Protection** (Complete).
 2. https://appstoreconnect.apple.com → My Apps → **+ New App** → iOS, name *Brainstash*
    (pick an alternative if taken), primary language English (AU), bundle id above, SKU `brainstash-001`.
 
