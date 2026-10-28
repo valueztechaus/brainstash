@@ -30,10 +30,14 @@
 	<string>public.app-category.productivity</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Brainstash uses the camera so you can attach a photo to an idea. Photos stay encrypted on your iPhone.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Brainstash uses Face ID to keep your ideas private.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Brainstash uses the microphone so you can dictate ideas. Audio is processed on your iPhone and never stored or sent anywhere.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Brainstash lets you attach photos to your ideas. Only the photos you pick are copied, and they stay encrypted on your iPhone.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Brainstash turns your voice into text on your iPhone. Speech is never sent to Apple or anyone else.</string>
 	<key>UIApplicationSceneManifest</key>

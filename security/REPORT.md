@@ -22,6 +22,7 @@ snapshots, keyboard learning caches, leaked secrets in the public repo, vulnerab
 | Voice | On-device speech recognition only (`requiresOnDeviceRecognition`); audio never stored or transmitted; mic/speech permission strings explain this |
 | Network | None. No ATS exceptions. Fonts bundled |
 | Input validation | Length caps & tag sanitising in `Idea` model (all construction paths) |
+| Attachments | Bytes in a separate AES-256 Hive lazy box (same Keychain key, same protected, backup-excluded directory). Photos re-encoded ≤2048 px with `requestFullMetadata: false` (no GPS EXIF). Picker temp copies deleted immediately. File names sanitised (no path parts/control chars) before any temp write. Decrypted share copies live in a per-share temp dir, deleted after the share sheet and swept at launch. 15 MB / 20 per idea caps. Deleting an idea or "Delete all" removes bytes and compacts the box |
 | Export | Re-auth when locked; temp file deleted after share + swept at launch |
 | Privacy manifest | No tracking, no collected data |
 
@@ -86,5 +87,6 @@ Result: **0 critical, 1 high, 4 medium, 5 low.** All high and medium items were 
 ## Accepted risks
 
 - Plaintext exists in memory while the app is unlocked (inherent).
-- Export JSON is unencrypted by design — the user chooses where it goes.
+- Export JSON is unencrypted by design — the user chooses where it goes. It lists attachment names and sizes but not their contents.
+- Sharing an attachment hands a plaintext copy to the app the user picks (by design).
 - No backups of the encrypted store: the user must export to keep a copy.

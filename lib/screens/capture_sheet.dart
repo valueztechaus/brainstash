@@ -1,14 +1,19 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app.dart';
+import '../models/attachment.dart';
 import '../models/idea.dart';
+import '../services/attachment_picker.dart';
 import '../services/voice_input.dart';
 import '../theme.dart';
+import '../widgets/attachment_strip.dart';
 import '../widgets/choice_row.dart';
 import '../widgets/voice_button.dart';
+import 'attachment_viewer.dart';
 
 Future<void> showCaptureSheet(BuildContext context, {bool voice = false}) {
   return showModalBottomSheet<void>(
@@ -51,6 +56,9 @@ class _CaptureSheetState extends State<CaptureSheet> {
   bool _listening = false;
   String? _voiceMessage;
   late VoiceInput _voice;
+  // Held in memory until the idea is saved, then stored encrypted.
+  final _pending = <({Attachment meta, Uint8List bytes})>[];
+  bool _attaching = false;
 
   @override
   void initState() {
@@ -129,7 +137,44 @@ class _CaptureSheetState extends State<CaptureSheet> {
     super.dispose();
   }
 
-  bool get _canSave => _title.text.trim().isNotEmpty && !_saving;
+  bool get _canSave => _title.text.trim().isNotEmpty && !_saving && !_attaching;
+
+  Future<void> _attach(AttachmentSource source) async {
+    final picker = AppScope.of(context).picker;
+    setState(() {
+      _attaching = true;
+      _error = null;
+    });
+    try {
+      final picked = await picker.pick(source);
+      if (picked == null) return;
+      final meta = Attachment.create(name: picked.name, kind: picked.kind, size: picked.bytes.length);
+      setState(() => _pending.add((meta: meta, bytes: picked.bytes)));
+    } on AttachmentPickError catch (e) {
+      setState(() => _error = e.message);
+    } on IdeaValidationError catch (e) {
+      setState(() => _error = e.message);
+    } on Object catch (e) {
+      debugPrint('Attach failed: $e');
+      setState(() => _error = 'Could not attach that. Please try again.');
+    } finally {
+      if (mounted) setState(() => _attaching = false);
+    }
+  }
+
+  Future<Uint8List?> _loadPending(String id) async {
+    for (final p in _pending) {
+      if (p.meta.id == id) return p.bytes;
+    }
+    return null;
+  }
+
+  Future<void> _openPending(Attachment a) async {
+    final removed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => AttachmentViewer(attachment: a, load: _loadPending)),
+    );
+    if (removed == true && mounted) setState(() => _pending.removeWhere((p) => p.meta.id == a.id));
+  }
 
   Future<void> _save() async {
     setState(() => _saving = true);
@@ -141,8 +186,24 @@ class _CaptureSheetState extends State<CaptureSheet> {
         gut: _gut,
         tags: Idea.parseTags(_tags.text),
       );
-      await AppScope.of(context).store.save(idea);
+      final store = AppScope.of(context).store;
+      final messenger = ScaffoldMessenger.of(context);
+      await store.save(idea);
+      // The idea is saved; a failed attachment must not leave the sheet open
+      // (a retry would duplicate the idea), so report and close instead.
+      var failed = 0;
+      for (final p in _pending) {
+        try {
+          await store.addAttachment(idea.id, name: p.meta.name, kind: p.meta.kind, bytes: p.bytes);
+        } on Object catch (e) {
+          debugPrint('Attachment save failed: $e');
+          failed++;
+        }
+      }
       if (mounted) Navigator.of(context).pop();
+      if (failed > 0) {
+        messenger.showSnackBar(SnackBar(content: Text('Idea saved, but $failed attachment(s) could not be stored.')));
+      }
     } on IdeaValidationError catch (e) {
       setState(() => _error = e.message);
     } on Object catch (e) {
@@ -219,6 +280,15 @@ class _CaptureSheetState extends State<CaptureSheet> {
                 hintText: 'Who is it for? What problem? Why now?',
                 counterText: '',
               ),
+            ),
+            const SizedBox(height: 16),
+            const FieldLabel('Photos & files'),
+            AttachmentStrip(
+              items: [for (final p in _pending) p.meta],
+              load: _loadPending,
+              busy: _attaching,
+              onAdd: _attach,
+              onOpen: _openPending,
             ),
             const SizedBox(height: 16),
             const FieldLabel('Kind'),

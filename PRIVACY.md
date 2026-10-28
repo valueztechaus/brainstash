@@ -1,6 +1,6 @@
 # Privacy Policy — Brainstash
 
-_Last updated: 28 October 2026 (voice capture added)_
+_Last updated: 28 October 2026 (voice capture and attachments added)_
 
 Brainstash does not collect, transmit, sell or share any personal data.
 
@@ -11,8 +11,11 @@ Brainstash does not collect, transmit, sell or share any personal data.
 - Voice dictation uses Apple's on-device speech recognition. Audio is processed on your iPhone,
   is never recorded or stored, and is never sent to Apple or anyone else. If on-device recognition
   isn't available for your language, voice capture is simply unavailable — there is no server fallback.
+- Photos and files you attach are copied into Brainstash's encrypted store on your device. Only the
+  items you pick are accessed; the app never browses your photo library. Photos are saved without
+  location data.
 - Face ID / Touch ID is handled entirely by iOS; the app only receives a yes/no result.
-- Data leaves your device only when you choose to share an idea or export your ideas through
+- Data leaves your device only when you choose to share an idea or attachment, or export your ideas through
   the iOS share sheet.
 - Deleting the app, or using Settings → Delete all data, permanently removes your ideas.
 

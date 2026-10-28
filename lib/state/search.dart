@@ -37,6 +37,7 @@ bool matchesSearch(Idea idea, List<String> terms) {
     idea.tags.join(' '),
     idea.kind.label,
     idea.stage.label,
+    ...idea.attachments.map((a) => a.name),
   ].join(' ').toLowerCase();
   return terms.every(haystack.contains);
 }

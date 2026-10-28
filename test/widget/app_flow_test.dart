@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:brainstash/app.dart';
 import 'package:brainstash/data/idea_repository.dart';
 import 'package:brainstash/data/key_store.dart';
+import 'package:brainstash/models/attachment.dart';
 import 'package:brainstash/models/idea.dart';
 import 'package:brainstash/services/app_lock.dart';
+import 'package:brainstash/services/attachment_picker.dart';
 import 'package:brainstash/services/voice_input.dart';
 import 'package:brainstash/state/idea_store.dart';
 import 'package:flutter/material.dart';
@@ -42,12 +46,35 @@ class FakeVoice implements VoiceInput {
   Future<void> cancel() async => cancelled = true;
 }
 
+class FakePicker implements AttachmentPicker {
+  FakePicker({this.result, this.error});
+
+  final PickedAttachment? result;
+  final AttachmentPickError? error;
+  final sources = <AttachmentSource>[];
+
+  @override
+  Future<PickedAttachment?> pick(AttachmentSource source) async {
+    sources.add(source);
+    if (error != null) throw error!;
+    return result;
+  }
+}
+
+final _photo = (
+  name: 'Photo.jpg',
+  kind: AttachmentKind.image,
+  bytes: Uint8List.fromList(List.filled(64, 7)),
+);
+final _pdf = (name: 'pitch.pdf', kind: AttachmentKind.file, bytes: Uint8List.fromList([37, 80, 68, 70]));
+
 Future<(IdeaStore, AppLock)> _pump(
   WidgetTester tester, {
   List<Idea> seed = const [],
   bool lockEnabled = false,
   bool authResult = true,
   VoiceInput? voice,
+  AttachmentPicker? picker,
 }) async {
   tester.view.physicalSize = const Size(1170, 2532);
   tester.view.devicePixelRatio = 3;
@@ -62,7 +89,12 @@ Future<(IdeaStore, AppLock)> _pump(
   );
   await store.load();
   await lock.init();
-  await tester.pumpWidget(BrainstashApp(store: store, lock: lock, voice: voice ?? FakeVoice()));
+  await tester.pumpWidget(BrainstashApp(
+    store: store,
+    lock: lock,
+    voice: voice ?? FakeVoice(),
+    picker: picker ?? FakePicker(),
+  ));
   await tester.pumpAndSettle();
   return (store, lock);
 }
@@ -280,5 +312,86 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Dog walker marketplace'), findsOneWidget);
     expect(find.text('Invoice chaser'), findsNothing);
+  });
+
+  Future<void> openDetail(WidgetTester tester, String title) async {
+    await tester.tap(find.text(title));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> attachFrom(WidgetTester tester, String key) async {
+    await tester.ensureVisible(find.byKey(const Key('attach-add')));
+    await tester.tap(find.byKey(const Key('attach-add')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(Key(key)));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('should attach a photo to an idea and remove it', (tester) async {
+    final picker = FakePicker(result: _photo);
+    final (store, _) = await _pump(tester, seed: [Idea.create(title: 'Whiteboard idea')], picker: picker);
+    await openDetail(tester, 'Whiteboard idea');
+    await attachFrom(tester, 'attach-camera');
+
+    expect(picker.sources, [AttachmentSource.camera]);
+    final idea = store.visible.single;
+    final a = idea.attachments.single;
+    expect(a.kind, AttachmentKind.image);
+    expect(await store.readAttachment(a.id), _photo.bytes);
+    expect(find.byKey(ValueKey('attachment-${a.id}')), findsOneWidget);
+
+    await tester.tap(find.byKey(ValueKey('attachment-${a.id}')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('attachment-remove')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('attachment-remove-confirm')));
+    await tester.pumpAndSettle();
+    expect(store.visible.single.attachments, isEmpty);
+    expect(await store.readAttachment(a.id), isNull);
+  });
+
+  testWidgets('should keep unsaved text edits when attaching', (tester) async {
+    final (store, _) = await _pump(tester, seed: [Idea.create(title: 'Draft')], picker: FakePicker(result: _pdf));
+    await openDetail(tester, 'Draft');
+    await tester.enterText(find.byKey(const Key('detail-title')), 'Draft renamed');
+    await attachFrom(tester, 'attach-files');
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    final idea = store.visible.single;
+    expect(idea.title, 'Draft renamed');
+    expect(idea.attachments.single.name, 'pitch.pdf');
+  });
+
+  testWidgets('should attach files while capturing a new idea', (tester) async {
+    final (store, _) = await _pump(tester, picker: FakePicker(result: _pdf));
+    await tester.tap(find.byKey(const Key('capture-fab')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('capture-title')), 'Pitch deck idea');
+    await attachFrom(tester, 'attach-files');
+    expect(store.total, 0, reason: 'nothing stored until Save');
+    await tester.tap(find.byKey(const Key('capture-save')));
+    await tester.pumpAndSettle();
+    final idea = store.visible.single;
+    expect(idea.attachments.single.name, 'pitch.pdf');
+    expect(await store.readAttachment(idea.attachments.single.id), _pdf.bytes);
+    expect(find.byIcon(Icons.attach_file_rounded), findsOneWidget, reason: 'card shows paperclip');
+  });
+
+  testWidgets('should explain picker errors', (tester) async {
+    await _pump(
+      tester,
+      seed: [Idea.create(title: 'No camera')],
+      picker: FakePicker(error: const AttachmentPickError('Allow Camera access for Brainstash in iOS Settings.')),
+    );
+    await openDetail(tester, 'No camera');
+    await attachFrom(tester, 'attach-camera');
+    expect(find.textContaining('Allow Camera access'), findsOneWidget);
+  });
+
+  testWidgets('should do nothing when the picker is cancelled', (tester) async {
+    final (store, _) = await _pump(tester, seed: [Idea.create(title: 'Cancel me')]);
+    await openDetail(tester, 'Cancel me');
+    await attachFrom(tester, 'attach-gallery');
+    expect(store.visible.single.attachments, isEmpty);
   });
 }

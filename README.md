@@ -21,7 +21,8 @@ through stages until one is ready to become a project.
 - **Search by text or voice** — tap the mic in the search bar and say “find ideas about invoices”. Words match in any order and loosely (“walking” finds “walker”) across titles, notes, next steps, `#tags`, kinds and stages.
 - **Star** the ones that matter; starred float to the top.
 - **Next step** field so every idea has a smallest move forward.
-- **Share** a single idea as text, or **export everything** as JSON.
+- **Photos & files** — attach a photo from the camera or your library, or any document from Files. Attachments are encrypted like everything else; tap one to view, open in another app or remove it.
+- **Share** a single idea as text, or **export everything** as JSON (attachment names only; share files individually).
 - **Face ID / passcode lock** (optional) and app-switcher privacy cover.
 
 ## Privacy & security

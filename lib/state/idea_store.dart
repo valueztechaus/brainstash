@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import '../data/idea_repository.dart';
+import '../models/attachment.dart';
 import '../models/idea.dart';
 import 'search.dart';
 
@@ -84,10 +85,51 @@ class IdeaStore extends ChangeNotifier {
   }
 
   Future<void> remove(String id) async {
+    final files = byId(id)?.attachments ?? const <Attachment>[];
     await _repo.delete(id);
     _all = _all.where((i) => i.id != id).toList();
     notifyListeners();
+    for (final a in files) {
+      await _repo.deleteFile(a.id);
+    }
   }
+
+  /// Stores [bytes] encrypted and links them to the idea. Returns the
+  /// updated idea. Throws [IdeaValidationError] for size/count limits.
+  Future<Idea> addAttachment(
+    String ideaId, {
+    required String name,
+    required AttachmentKind kind,
+    required Uint8List bytes,
+  }) async {
+    final idea = byId(ideaId);
+    if (idea == null) throw const IdeaValidationError('That idea no longer exists.');
+    if (idea.attachments.length >= Attachment.maxPerIdea) {
+      throw const IdeaValidationError('An idea can have up to ${Attachment.maxPerIdea} attachments');
+    }
+    final a = Attachment.create(name: name, kind: kind, size: bytes.length);
+    await _repo.putFile(a.id, bytes);
+    final updated = idea.copyWith(attachments: [...idea.attachments, a]);
+    try {
+      await save(updated);
+    } on Object {
+      await _repo.deleteFile(a.id);
+      rethrow;
+    }
+    return updated;
+  }
+
+  Future<Idea?> removeAttachment(String ideaId, String attachmentId) async {
+    final idea = byId(ideaId);
+    if (idea == null) return null;
+    final updated =
+        idea.copyWith(attachments: idea.attachments.where((a) => a.id != attachmentId).toList());
+    await save(updated);
+    await _repo.deleteFile(attachmentId);
+    return updated;
+  }
+
+  Future<Uint8List?> readAttachment(String attachmentId) => _repo.readFile(attachmentId);
 
   Future<void> toggleStar(String id) async {
     final i = byId(id);

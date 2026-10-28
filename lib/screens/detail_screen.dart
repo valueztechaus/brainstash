@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../app.dart';
+import '../models/attachment.dart';
 import '../models/idea.dart';
+import '../services/attachment_picker.dart';
 import '../theme.dart';
+import '../widgets/attachment_strip.dart';
 import '../widgets/choice_row.dart';
 import '../widgets/stage_picker.dart';
+import 'attachment_viewer.dart';
 
 /// View and edit one idea. Edits save when leaving the screen.
 class DetailScreen extends StatefulWidget {
@@ -25,6 +29,7 @@ class _DetailScreenState extends State<DetailScreen> {
   late final TextEditingController _tags;
   bool _deleted = false;
   bool _ready = false;
+  bool _attaching = false;
 
   @override
   void didChangeDependencies() {
@@ -77,6 +82,38 @@ class _DetailScreenState extends State<DetailScreen> {
   Future<void> _quick(Idea next) async {
     setState(() => _idea = next);
     await AppScope.of(context).store.save(next);
+  }
+
+  Future<void> _attach(AttachmentSource source) async {
+    final scope = AppScope.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _attaching = true);
+    try {
+      final picked = await scope.picker.pick(source);
+      if (picked == null) return;
+      final updated = await scope.store
+          .addAttachment(_idea.id, name: picked.name, kind: picked.kind, bytes: picked.bytes);
+      if (mounted) setState(() => _idea = updated);
+    } on AttachmentPickError catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } on IdeaValidationError catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } on Object catch (e) {
+      debugPrint('Attach failed: $e');
+      messenger.showSnackBar(const SnackBar(content: Text('Could not attach that. Please try again.')));
+    } finally {
+      if (mounted) setState(() => _attaching = false);
+    }
+  }
+
+  Future<void> _openAttachment(Attachment a) async {
+    final store = AppScope.of(context).store;
+    final removed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => AttachmentViewer(attachment: a, load: store.readAttachment)),
+    );
+    if (removed != true) return;
+    final updated = await store.removeAttachment(_idea.id, a.id);
+    if (updated != null && mounted) setState(() => _idea = updated);
   }
 
   Future<void> _delete() async {
@@ -191,6 +228,15 @@ class _DetailScreenState extends State<DetailScreen> {
         const FieldLabel('Notes'),
         TextField(controller: _notes, autocorrect: false, enableSuggestions: false, minLines: 4, maxLines: null, maxLength: Idea.maxNotes,
             decoration: const InputDecoration(counterText: '')),
+        const SizedBox(height: 18),
+        const FieldLabel('Photos & files'),
+        AttachmentStrip(
+          items: _idea.attachments,
+          load: AppScope.of(context).store.readAttachment,
+          busy: _attaching,
+          onAdd: _attach,
+          onOpen: _openAttachment,
+        ),
         const SizedBox(height: 18),
         const FieldLabel('Next step'),
         TextField(controller: _next, autocorrect: false, enableSuggestions: false, maxLines: null, maxLength: Idea.maxNextStep,

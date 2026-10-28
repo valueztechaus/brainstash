@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:brainstash/data/idea_repository.dart';
+import 'package:brainstash/models/attachment.dart';
 import 'package:brainstash/models/idea.dart';
 import 'package:brainstash/state/idea_store.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -83,5 +85,61 @@ void main() {
     expect(s.loaded, isTrue);
     expect(s.error, contains('Could not open your ideas'));
     expect(s.error, isNot(contains('keychain')), reason: 'no internals leaked');
+  });
+
+  group('attachments', () {
+    late InMemoryIdeaRepository repo;
+    late IdeaStore store;
+    late Idea idea;
+    final bytes = Uint8List.fromList([1, 2, 3]);
+
+    setUp(() async {
+      idea = Idea.create(title: 'Has files');
+      repo = InMemoryIdeaRepository([idea]);
+      store = IdeaStore(repo);
+      await store.load();
+    });
+
+    test('should store bytes and link metadata', () async {
+      final updated = await store.addAttachment(idea.id, name: 'a.pdf', kind: AttachmentKind.file, bytes: bytes);
+      final a = updated.attachments.single;
+      expect(a.name, 'a.pdf');
+      expect(a.size, 3);
+      expect(await store.readAttachment(a.id), bytes);
+      expect(store.byId(idea.id)!.attachments, [a]);
+    });
+
+    test('should delete bytes when an attachment is removed', () async {
+      final a = (await store.addAttachment(idea.id, name: 'a', kind: AttachmentKind.file, bytes: bytes))
+          .attachments
+          .single;
+      await store.removeAttachment(idea.id, a.id);
+      expect(store.byId(idea.id)!.attachments, isEmpty);
+      expect(repo.files, isEmpty);
+    });
+
+    test('should delete bytes when the idea is deleted', () async {
+      await store.addAttachment(idea.id, name: 'a', kind: AttachmentKind.file, bytes: bytes);
+      await store.addAttachment(idea.id, name: 'b', kind: AttachmentKind.image, bytes: bytes);
+      await store.remove(idea.id);
+      expect(repo.files, isEmpty);
+    });
+
+    test('should enforce the per-idea limit', () async {
+      for (var i = 0; i < Attachment.maxPerIdea; i++) {
+        await store.addAttachment(idea.id, name: '$i', kind: AttachmentKind.file, bytes: bytes);
+      }
+      await expectLater(
+        store.addAttachment(idea.id, name: 'x', kind: AttachmentKind.file, bytes: bytes),
+        throwsA(isA<IdeaValidationError>()),
+      );
+      expect(repo.files.length, Attachment.maxPerIdea, reason: 'no orphaned bytes');
+    });
+
+    test('should find ideas by attachment name', () async {
+      await store.addAttachment(idea.id, name: 'whiteboard-sketch.jpg', kind: AttachmentKind.image, bytes: bytes);
+      store.setQuery('whiteboard');
+      expect(store.visible.single.id, idea.id);
+    });
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'screens/inbox_screen.dart';
 import 'services/app_lock.dart';
+import 'services/attachment_picker.dart';
 import 'services/voice_input.dart';
 import 'state/idea_store.dart';
 import 'theme.dart';
@@ -14,27 +15,36 @@ class AppScope extends InheritedWidget {
     required this.store,
     required this.lock,
     required this.voice,
+    required this.picker,
     required super.child,
   });
 
   final IdeaStore store;
   final AppLock lock;
   final VoiceInput voice;
+  final AttachmentPicker picker;
 
   static AppScope of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<AppScope>()!;
 
   @override
   bool updateShouldNotify(AppScope old) =>
-      old.store != store || old.lock != lock || old.voice != voice;
+      old.store != store || old.lock != lock || old.voice != voice || old.picker != picker;
 }
 
 class BrainstashApp extends StatelessWidget {
-  const BrainstashApp({super.key, required this.store, required this.lock, required this.voice});
+  const BrainstashApp({
+    super.key,
+    required this.store,
+    required this.lock,
+    required this.voice,
+    required this.picker,
+  });
 
   final IdeaStore store;
   final AppLock lock;
   final VoiceInput voice;
+  final AttachmentPicker picker;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +52,7 @@ class BrainstashApp extends StatelessWidget {
       store: store,
       lock: lock,
       voice: voice,
+      picker: picker,
       child: MaterialApp(
         title: 'Brainstash',
         debugShowCheckedModeBanner: false,

@@ -91,6 +91,15 @@ class IdeaCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Pill(label: idea.stage.label, bg: const Color(0xFF22252D), fg: const Color(0xFFC9CDD5)),
                   const Spacer(),
+                  if (idea.attachments.isNotEmpty) ...[
+                    Icon(Icons.attach_file_rounded,
+                        size: 14,
+                        color: AppColors.textFaint,
+                        semanticLabel: '${idea.attachments.length} attachments'),
+                    Text('${idea.attachments.length}',
+                        style: const TextStyle(fontFamily: monoFamily, fontSize: 12, color: AppColors.textFaint)),
+                    const SizedBox(width: 10),
+                  ],
                   Text(
                     relativeTime(idea.updatedAt),
                     style: const TextStyle(fontFamily: monoFamily, fontSize: 12, color: AppColors.textFaint),

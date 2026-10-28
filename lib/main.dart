@@ -7,6 +7,8 @@ import 'app.dart';
 import 'data/idea_repository.dart';
 import 'data/key_store.dart';
 import 'services/app_lock.dart';
+import 'services/attachment_picker.dart';
+import 'services/attachment_share.dart';
 import 'services/voice_input.dart';
 import 'state/idea_store.dart';
 
@@ -47,16 +49,25 @@ Future<void> start() async {
   final store = IdeaStore(repo);
   final lock = AppLock(keyStore: keyStore);
   await Future.wait([store.load(), lock.init()]);
-  runApp(BrainstashApp(store: store, lock: lock, voice: OnDeviceVoiceInput()));
+  runApp(BrainstashApp(
+    store: store,
+    lock: lock,
+    voice: OnDeviceVoiceInput(),
+    picker: DeviceAttachmentPicker(),
+  ));
 }
 
-/// Exports are plaintext; remove any left behind if the app was killed mid-share.
+/// Exports and shared attachments are plaintext; remove any left behind if
+/// the app was killed mid-share.
 Future<void> _sweepStaleExports() async {
   try {
     final tmp = await getTemporaryDirectory();
     await for (final f in tmp.list()) {
-      if (f is File && f.uri.pathSegments.last.startsWith('brainstash-export-')) {
+      final name = f.uri.pathSegments.lastWhere((s) => s.isNotEmpty, orElse: () => '');
+      if (f is File && name.startsWith('brainstash-export-')) {
         await f.delete();
+      } else if (f is Directory && name.startsWith(shareDirPrefix)) {
+        await f.delete(recursive: true);
       }
     }
   } on Object catch (e) {

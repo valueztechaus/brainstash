@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
+import 'attachment.dart';
+
 enum IdeaKind {
   product('Product'),
   service('Service'),
@@ -60,6 +62,7 @@ class Idea {
     required this.starred,
     required this.createdAt,
     required this.updatedAt,
+    this.attachments = const [],
   });
 
   static const maxTitle = 200;
@@ -79,6 +82,7 @@ class Idea {
   final bool starred;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final List<Attachment> attachments;
 
   factory Idea.create({
     required String title,
@@ -115,6 +119,7 @@ class Idea {
     required bool starred,
     required DateTime createdAt,
     required DateTime updatedAt,
+    List<Attachment> attachments = const [],
   }) {
     final t = title.trim();
     if (t.isEmpty) throw const IdeaValidationError('Title is required');
@@ -128,6 +133,9 @@ class Idea {
     if (step.length > maxNextStep) {
       throw const IdeaValidationError('Next step must be $maxNextStep characters or fewer');
     }
+    if (attachments.length > Attachment.maxPerIdea) {
+      throw const IdeaValidationError('An idea can have up to ${Attachment.maxPerIdea} attachments');
+    }
     return Idea._(
       id: id,
       title: t,
@@ -140,6 +148,7 @@ class Idea {
       starred: starred,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      attachments: List.unmodifiable(attachments),
     );
   }
 
@@ -167,6 +176,7 @@ class Idea {
     String? nextStep,
     List<String>? tags,
     bool? starred,
+    List<Attachment>? attachments,
   }) {
     return Idea._validated(
       id: id,
@@ -180,6 +190,7 @@ class Idea {
       starred: starred ?? this.starred,
       createdAt: createdAt,
       updatedAt: DateTime.now().toUtc(),
+      attachments: attachments ?? this.attachments,
     );
   }
 
@@ -195,6 +206,7 @@ class Idea {
         'starred': starred,
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
+        'attachments': attachments.map((a) => a.toMap()).toList(),
       };
 
   factory Idea.fromMap(Map<dynamic, dynamic> m) {
@@ -211,6 +223,10 @@ class Idea {
         starred: (m['starred'] as bool?) ?? false,
         createdAt: DateTime.parse(m['createdAt'] as String).toUtc(),
         updatedAt: DateTime.parse(m['updatedAt'] as String).toUtc(),
+        attachments: ((m['attachments'] as List?) ?? const [])
+            .whereType<Map<dynamic, dynamic>>()
+            .map(Attachment.fromMap)
+            .toList(),
       );
     } on IdeaValidationError {
       rethrow;
@@ -242,9 +258,10 @@ class Idea {
       listEquals(other.tags, tags) &&
       other.starred == starred &&
       other.createdAt == createdAt &&
-      other.updatedAt == updatedAt;
+      other.updatedAt == updatedAt &&
+      listEquals(other.attachments, attachments);
 
   @override
   int get hashCode => Object.hash(id, title, notes, kind, stage, gut, nextStep,
-      Object.hashAll(tags), starred, createdAt, updatedAt);
+      Object.hashAll(tags), starred, createdAt, updatedAt, Object.hashAll(attachments));
 }

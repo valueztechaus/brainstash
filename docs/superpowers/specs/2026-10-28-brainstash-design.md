@@ -105,3 +105,21 @@ State: `ChangeNotifier` (no extra state-management dependency). Tests: `flutter_
 ## Left to the builder
 
 Exact spacing/animation, empty-state copy, error copy.
+
+## Attachments (added 2026-10-28)
+
+- Attach a photo (camera or photo library) or any document (Files) to an idea, from the idea detail
+  screen or while capturing a new idea. Section label: "Photos & files"; add tile opens a sheet with
+  Take photo / Choose from Photos / Choose a file.
+- Thumbnails (photos) and file tiles (extension + name) in a wrap; tap → full-screen viewer with pinch
+  zoom (photos) or file summary, plus **Open or share** (iOS share sheet: open in app, save to Files,
+  AirDrop) and **Remove** (confirm).
+- Limits: 15 MB per attachment, 20 per idea. Photos re-encoded at ≤2048 px, JPEG quality 85, without
+  full metadata (drops GPS).
+- Storage: metadata (`id, name, kind, size, createdAt`) inside the idea record; bytes in a separate
+  encrypted Hive **lazy** box `attachments_v1` with the same Keychain key. Old records without
+  attachments load unchanged.
+- Capture sheet holds picked attachments in memory until Save; if any fail to store after the idea is
+  saved, the sheet still closes and reports the count (a retry would duplicate the idea).
+- Inbox cards show a paperclip + count; search matches attachment names.
+- Export JSON includes attachment metadata, not contents.
