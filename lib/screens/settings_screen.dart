@@ -108,21 +108,37 @@ class _About extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(24),
+    return Padding(
+      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          BrandMark(size: 72),
-          SizedBox(height: 12),
-          Text('Brainstash', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-          SizedBox(height: 6),
-          Text(
+          const BrandMark(size: 72),
+          const SizedBox(height: 12),
+          const Text('Brainstash', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 6),
+          const Text(
             'Dump the spark. Build it later.\n\n'
             'Your ideas are encrypted (AES-256) and never leave this device. '
             'No accounts, no analytics, no network.\n\nOpen source · MIT licence',
             textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.textMuted, height: 1.5),
           ),
+          const SizedBox(height: 28),
+          const Text('Built by', style: TextStyle(color: AppColors.textFaint, fontSize: 12)),
+          const SizedBox(height: 8),
+          // White-plate logo: the brand has no reversed variant for dark backgrounds.
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+            child: Image.asset(
+              'assets/brand/valueztech-logo.png',
+              key: const Key('valueztech-logo'),
+              width: 220,
+              semanticLabel: 'Valueztech — Maximising Asset Intelligence',
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text('www.valueztech.com', style: TextStyle(color: AppColors.textFaint, fontSize: 12)),
         ],
       ),
     );

@@ -394,4 +394,13 @@ void main() {
     await attachFrom(tester, 'attach-gallery');
     expect(store.visible.single.attachments, isEmpty);
   });
+
+  testWidgets('should credit Valueztech in Settings', (tester) async {
+    await _pump(tester);
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.byKey(const Key('valueztech-logo')), 200);
+    expect(find.byKey(const Key('valueztech-logo')), findsOneWidget);
+    expect(find.text('www.valueztech.com'), findsOneWidget);
+  });
 }

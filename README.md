@@ -3,6 +3,7 @@
 <h1 align="center">Brainstash</h1>
 <p align="center"><b>Dump the spark. Build it later.</b><br>
 A private, offline iOS inbox for product ideas, service ideas, problems worth solving — anything.</p>
+<p align="center">Built by <a href="https://www.valueztech.com">Valueztech</a> with Claude Code — design to device in an afternoon.</p>
 
 ---
 
@@ -91,3 +92,17 @@ end by Claude Code running Claude Opus 5.5. Every decision is in
 
 [MIT](LICENSE) © 2026 Valueztech. Fira Sans / Fira Code fonts under the SIL Open Font Licence
 (`assets/fonts/OFL.txt`).
+
+---
+
+## Built by Valueztech
+
+<p><a href="https://www.valueztech.com"><img src="assets/brand/valueztech-logo-transparent.png" width="260" alt="Valueztech — Maximising Asset Intelligence"></a></p>
+
+Brainstash was designed, built, security-tested and documented by [Valueztech](https://www.valueztech.com)
+(Melbourne, Australia) using Claude Code. See [docs/ARTICLE.md](docs/ARTICLE.md) for how, and
+[docs/TOKENS.md](docs/TOKENS.md) for exactly how many tokens it took.
+
+The code is MIT-licensed. The Valueztech name and logo are trademarks of Valueztech Pty Ltd and are
+**not** covered by the MIT licence — forks should remove them (`assets/brand/` and the "Built by"
+block in `lib/screens/settings_screen.dart`) and ship under their own name.
