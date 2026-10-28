@@ -24,5 +24,5 @@ and public GitHub release.
 | 14 | `flutter analyze` clean, all tests pass | CI script | ✅ |
 | 15 | Build + run on iOS simulator, screenshots | `docs/screenshots/` | ✅ |
 | 16 | README, SECURITY, CONTRIBUTING, LICENSE, App Store submission guide | review | ✅ |
-| 17 | Token report | `docs/TOKENS.md` | ⬜ |
-| 18 | Publish public GitHub repo | URL | ⬜ |
+| 17 | Token report | `docs/TOKENS.md` | ✅ |
+| 18 | Publish public GitHub repo | URL | ✅ https://github.com/valueztechaus/brainstash |

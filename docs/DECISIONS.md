@@ -34,3 +34,4 @@ marked otherwise.
 | D26 | Integration test on the simulator doubles as screenshot generator | One script gives real-device E2E coverage (Keychain + encrypted store) and repeatable App Store screenshots. It caught a real bug (fast star + stage tap lost the star). | Manual screenshots |
 | D27 | Release builds strip symbols (dSYM kept) | MobSF warning; smaller binary, harder reverse engineering. | — |
 | D28 | MobSF `@rpath` / malloc / insecure-API warnings accepted | They come from the Flutter engine and framework embedding and can't be removed in a Flutter app. | Native rewrite |
+| D29 | Security-review sub-agent ran on Sonnet 5.5 (agent definition default), not Opus | Oversight: the owner asked for Opus throughout and the model wasn't overridden. Its findings were all verified and fixed by the main Opus session, with tests. ~0.6% of tokens. | Re-run on Opus (offered) |
