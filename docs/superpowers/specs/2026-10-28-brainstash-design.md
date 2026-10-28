@@ -67,7 +67,20 @@ others can use and fork it.
 - **On-device only:** `SFSpeechRecognizer` with `requiresOnDeviceRecognition = true`
   (`speech_to_text` `onDevice: true`). No server fallback. Audio is not recorded or stored.
 - Clear messages for permission denied / on-device unavailable / nothing heard.
-- Session stops after 4 s of silence or 2 min; cancelled if the sheet closes.
+- **Hands-free save (added 2026-10-28):** dictation waits through up to 30 s of silence (5 min max) so the
+  user can think. Saying a save command at the end — “save the idea”, “save this idea”, “save my idea”,
+  “that's it, save it”, “done, save”, “save it now” — strips the command, saves and closes the sheet with a
+  haptic tap. Bare “save it” is not a command because it occurs naturally in idea descriptions. Command
+  with no idea spoken → prompt, no save. Silence timeout → “Paused. Tap Save, or the mic to keep going.”
+- Cancelled if the sheet closes.
+
+## Search (updated 2026-10-28)
+
+- Text field plus mic. Voice search listens up to 15 s, stops after 2 s of silence, and strips lead-ins
+  (“search for”, “find my ideas about”, “show me”).
+- Query split into words; filler words (a, the, for, about…) dropped; light suffix stemming
+  (“walking” → “walk”); every remaining word must appear somewhere in title, notes, next step, tags,
+  kind label or stage label, in any order. Clear (×) button resets.
 
 ## Security design
 

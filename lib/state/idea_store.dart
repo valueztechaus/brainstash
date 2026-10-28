@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../data/idea_repository.dart';
 import '../models/idea.dart';
+import 'search.dart';
 
 /// App state: the idea list plus the inbox's search and filters.
 class IdeaStore extends ChangeNotifier {
@@ -38,15 +39,11 @@ class IdeaStore extends ChangeNotifier {
 
   /// Starred first, then most recently updated.
   List<Idea> get visible {
-    final q = _query.trim().toLowerCase();
+    final terms = searchTerms(_query);
     final list = _all.where((i) {
       if (_kind != null && i.kind != _kind) return false;
       if (_stage != null && i.stage != _stage) return false;
-      if (q.isEmpty) return true;
-      return i.title.toLowerCase().contains(q) ||
-          i.notes.toLowerCase().contains(q) ||
-          i.nextStep.toLowerCase().contains(q) ||
-          i.tags.any((t) => t.contains(q.replaceFirst('#', '')));
+      return matchesSearch(i, terms);
     }).toList()
       ..sort((a, b) {
         if (a.starred != b.starred) return a.starred ? -1 : 1;

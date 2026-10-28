@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app.dart';
 import '../models/idea.dart';
+import '../services/voice_input.dart';
 import '../state/idea_store.dart';
 import '../theme.dart';
 import '../widgets/brand_mark.dart';
@@ -88,6 +89,119 @@ class InboxScreen extends StatelessWidget {
   }
 }
 
+class _SearchBar extends StatefulWidget {
+  const _SearchBar({required this.store});
+
+  final IdeaStore store;
+
+  @override
+  State<_SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<_SearchBar> {
+  late final _text = TextEditingController(text: widget.store.query);
+  bool _listening = false;
+  VoiceInput? _voice;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _voice = AppScope.of(context).voice;
+  }
+
+  @override
+  void dispose() {
+    if (_listening) _voice?.cancel();
+    _text.dispose();
+    super.dispose();
+  }
+
+  void _set(String q) {
+    _text.value = TextEditingValue(text: q, selection: TextSelection.collapsed(offset: q.length));
+    widget.store.setQuery(q);
+    setState(() {});
+  }
+
+  Future<void> _toggleVoice() async {
+    final voice = _voice!;
+    if (_listening) {
+      await voice.stop();
+      return;
+    }
+    FocusScope.of(context).unfocus();
+    final messenger = ScaffoldMessenger.of(context);
+    final status = await voice.prepare();
+    if (!mounted) return;
+    if (status != VoiceStatus.idle) {
+      messenger.showSnackBar(SnackBar(
+        content: Text(status == VoiceStatus.denied
+            ? 'Allow Microphone and Speech Recognition for Brainstash in iOS Settings.'
+            : "On-device speech recognition isn't available here."),
+      ));
+      return;
+    }
+    setState(() => _listening = true);
+    await voice.start(
+      pauseFor: const Duration(seconds: 2),
+      listenFor: const Duration(seconds: 15),
+      onText: (t) {
+        if (mounted) _set(searchQueryFromSpeech(t));
+      },
+      onDone: (_) {
+        if (mounted) setState(() => _listening = false);
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      key: const Key('search'),
+      controller: _text,
+      autocorrect: false,
+      enableSuggestions: false,
+      onChanged: (q) {
+        widget.store.setQuery(q);
+        setState(() {});
+      },
+      textInputAction: TextInputAction.search,
+      decoration: InputDecoration(
+        hintText: _listening ? 'Listening… say what to find' : 'Search ideas',
+        prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textFaint),
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_text.text.isNotEmpty && !_listening)
+              IconButton(
+                key: const Key('search-clear'),
+                tooltip: 'Clear search',
+                icon: const Icon(Icons.close_rounded, color: AppColors.textFaint),
+                onPressed: () => _set(''),
+              ),
+            IconButton(
+              key: const Key('search-voice'),
+              tooltip: _listening ? 'Stop listening' : 'Search by voice',
+              icon: Icon(_listening ? Icons.stop_rounded : Icons.mic_rounded,
+                  color: _listening ? AppColors.amber : AppColors.textMuted),
+              onPressed: _toggleVoice,
+            ),
+          ],
+        ),
+        fillColor: AppColors.surfaceHigh,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: _listening ? const BorderSide(color: AppColors.amber) : BorderSide.none,
+        ),
+        contentPadding: EdgeInsets.zero,
+      ),
+    );
+  }
+}
+
 class _Header extends StatelessWidget {
   const _Header({required this.store});
 
@@ -120,27 +234,7 @@ class _Header extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          TextField(
-            key: const Key('search'),
-              autocorrect: false,
-              enableSuggestions: false,
-            onChanged: store.setQuery,
-            textInputAction: TextInputAction.search,
-            decoration: InputDecoration(
-              hintText: 'Search ideas',
-              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textFaint),
-              fillColor: AppColors.surfaceHigh,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
+          _SearchBar(store: store),
           const SizedBox(height: 14),
           _KindChips(store: store),
         ],

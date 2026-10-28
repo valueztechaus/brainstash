@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../app.dart';
 import '../models/idea.dart';
@@ -22,6 +25,11 @@ const _voiceMessages = {
       "On-device speech recognition isn't available here. Audio is never sent off your phone, so please type instead.",
   VoiceStatus.error: "Didn't catch that. Tap the mic to try again.",
 };
+
+/// How long dictation waits through silence for more words or a spoken
+/// "save the idea" before pausing.
+const voicePauseFor = Duration(seconds: 30);
+const voiceListenFor = Duration(minutes: 5);
 
 class CaptureSheet extends StatefulWidget {
   const CaptureSheet({super.key, this.startWithVoice = false});
@@ -74,21 +82,42 @@ class _CaptureSheetState extends State<CaptureSheet> {
     }
     final notesBefore = _notes.text;
     final autoTitle = _title.text.trim().isEmpty;
+    var commandHeard = false;
     setState(() => _listening = true);
     await _voice.start(
+      pauseFor: voicePauseFor,
+      listenFor: voiceListenFor,
       onText: (t) {
-        if (!mounted) return;
-        _notes.text = mergeTranscript(notesBefore, t);
-        if (autoTitle) _title.text = titleFromTranscript(t);
+        if (!mounted || commandHeard) return;
+        final spoken = extractSaveCommand(t);
+        _notes.text = mergeTranscript(notesBefore, spoken.text);
+        if (autoTitle) _title.text = titleFromTranscript(spoken.text);
+        if (spoken.save) {
+          commandHeard = true;
+          unawaited(_voice.stop());
+          unawaited(_saveByVoice());
+        }
       },
       onDone: (s) {
         if (!mounted) return;
         setState(() {
           _listening = false;
-          _voiceMessage = _voiceMessages[s];
+          if (!commandHeard) {
+            _voiceMessage = _voiceMessages[s] ??
+                (s == VoiceStatus.idle && _canSave ? 'Paused. Tap Save, or the mic to keep going.' : null);
+          }
         });
       },
     );
+  }
+
+  Future<void> _saveByVoice() async {
+    if (!_canSave) {
+      setState(() => _voiceMessage = 'Say your idea first, then "save the idea".');
+      return;
+    }
+    unawaited(HapticFeedback.mediumImpact());
+    await _save();
   }
 
   @override
@@ -163,6 +192,13 @@ class _CaptureSheetState extends State<CaptureSheet> {
                 ),
               ],
             ),
+            if (_listening)
+              const Padding(
+                key: Key('voice-hint'),
+                padding: EdgeInsets.only(bottom: 8),
+                child: Text('Say “save the idea” when you’re done.',
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
+              ),
             if (_voiceMessage != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),

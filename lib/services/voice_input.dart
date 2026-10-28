@@ -10,10 +10,13 @@ abstract interface class VoiceInput {
   Future<VoiceStatus> prepare();
 
   /// Streams the running transcript to [onText]; [onDone] fires when the
-  /// session ends (silence, stop, or error) with the final status.
+  /// session ends (silence of [pauseFor], [listenFor] elapsed, stop, or
+  /// error) with the final status.
   Future<void> start({
     required ValueChanged<String> onText,
     required ValueChanged<VoiceStatus> onDone,
+    Duration pauseFor,
+    Duration listenFor,
   });
 
   Future<void> stop();
@@ -44,6 +47,8 @@ class OnDeviceVoiceInput implements VoiceInput {
   Future<void> start({
     required ValueChanged<String> onText,
     required ValueChanged<VoiceStatus> onDone,
+    Duration pauseFor = const Duration(seconds: 4),
+    Duration listenFor = const Duration(minutes: 2),
   }) async {
     _onDone = onDone;
     _errored = false;
@@ -54,8 +59,8 @@ class OnDeviceVoiceInput implements VoiceInput {
         partialResults: true,
         cancelOnError: true,
         listenMode: ListenMode.dictation,
-        listenFor: const Duration(minutes: 2),
-        pauseFor: const Duration(seconds: 4),
+        listenFor: listenFor,
+        pauseFor: pauseFor,
       ),
     );
   }
@@ -100,3 +105,38 @@ String titleFromTranscript(String transcript) {
 
 String mergeTranscript(String existing, String transcript) =>
     existing.trim().isEmpty ? transcript : '${existing.trimRight()}\n\n$transcript';
+
+// Spoken "save" commands, only recognised at the very end of the transcript.
+// Bare "save it" is excluded because it's common in ordinary idea
+// descriptions ("snap a recipe and save it").
+final _saveCommand = RegExp(
+  r"(?:^|[\s,;:]+)"
+  r"(?:(?:ok(?:ay)?|alright|right|please|now)[\s,]+)*"
+  r"(?:"
+  r"(?:that['’]?s it|that is it|done|finished)[\s,.!]+(?:please[\s,]+)?save(?:\s+(?:it|this|that|(?:the\s+|this\s+)?idea))?"
+  r"|save\s+(?:the\s+|this\s+|that\s+|my\s+)?idea"
+  r"|save\s+(?:it|this|that)\s+now"
+  r")"
+  r"(?:\s+(?:now|please))?[\s.!?]*$",
+  caseSensitive: false,
+);
+
+/// Detects a trailing spoken save command such as "save the idea" and
+/// returns the transcript without it.
+({String text, bool save}) extractSaveCommand(String transcript) {
+  final m = _saveCommand.firstMatch(transcript);
+  if (m == null) return (text: transcript, save: false);
+  final text = transcript.substring(0, m.start).replaceFirst(RegExp(r'[\s,;:]+$'), '');
+  return (text: text, save: true);
+}
+
+final _searchLeadIn = RegExp(
+  r'^(?:(?:please|can you|could you|search(?: for)?|find(?: me)?|show(?: me)?|look(?: for| up)?|'
+  r'any|all|my|the|ideas?|about|for|on|with|related to)\s+)+',
+);
+
+/// Turns "Find my ideas about invoices." into "invoices".
+String searchQueryFromSpeech(String transcript) {
+  final text = transcript.toLowerCase().replaceAll(RegExp(r'[.!?,]'), ' ').trim().replaceAll(RegExp(r'\s+'), ' ');
+  return text.replaceFirst(_searchLeadIn, '');
+}

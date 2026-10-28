@@ -15,6 +15,8 @@ class FakeVoice implements VoiceInput {
   final List<String> words;
   final VoiceStatus endWith;
   bool cancelled = false;
+  int stops = 0;
+  Duration? lastPauseFor;
 
   @override
   Future<VoiceStatus> prepare() async => status;
@@ -23,7 +25,10 @@ class FakeVoice implements VoiceInput {
   Future<void> start({
     required ValueChanged<String> onText,
     required ValueChanged<VoiceStatus> onDone,
+    Duration pauseFor = const Duration(seconds: 4),
+    Duration listenFor = const Duration(minutes: 2),
   }) async {
+    lastPauseFor = pauseFor;
     for (final w in words) {
       onText(w);
     }
@@ -31,7 +36,7 @@ class FakeVoice implements VoiceInput {
   }
 
   @override
-  Future<void> stop() async {}
+  Future<void> stop() async => stops++;
 
   @override
   Future<void> cancel() async => cancelled = true;
@@ -208,5 +213,72 @@ void main() {
     await tester.tap(find.byKey(const Key('voice-fab')));
     await tester.pumpAndSettle();
     expect(find.textContaining('iOS Settings'), findsOneWidget);
+  });
+
+  testWidgets('should save automatically when "save the idea" is spoken', (tester) async {
+    final voice = FakeVoice(words: [
+      'Invoice chaser',
+      'Invoice chaser for tradies. Save the',
+      'Invoice chaser for tradies. Save the idea',
+      'Invoice chaser for tradies. Save the idea.',
+    ]);
+    final (store, _) = await _pump(tester, voice: voice);
+    await tester.tap(find.byKey(const Key('voice-fab')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('capture-save')), findsNothing, reason: 'sheet closed');
+    final saved = store.visible.single;
+    expect(saved.title, 'Invoice chaser for tradies');
+    expect(saved.notes, 'Invoice chaser for tradies.');
+    expect(voice.stops, 1);
+    expect(voice.lastPauseFor, const Duration(seconds: 30), reason: 'waits through thinking pauses');
+  });
+
+  testWidgets('should not save when only the command is spoken', (tester) async {
+    final (store, _) = await _pump(tester, voice: FakeVoice(words: ['Save the idea']));
+    await tester.tap(find.byKey(const Key('voice-fab')));
+    await tester.pumpAndSettle();
+    expect(store.total, 0);
+    expect(find.textContaining('Say your idea first'), findsOneWidget);
+  });
+
+  testWidgets('should keep the sheet open after a silent pause', (tester) async {
+    final (store, _) = await _pump(tester, voice: FakeVoice(words: ['Thinking about a mesh wifi planner']));
+    await tester.tap(find.byKey(const Key('voice-fab')));
+    await tester.pumpAndSettle();
+    expect(store.total, 0);
+    expect(find.textContaining('Paused'), findsOneWidget);
+    expect(find.text('Thinking about a mesh wifi planner'), findsWidgets);
+  });
+
+  testWidgets('should search by voice', (tester) async {
+    final (store, _) = await _pump(
+      tester,
+      seed: [
+        Idea.create(title: 'Dog walker marketplace'),
+        Idea.create(title: 'Invoice chaser'),
+      ],
+      voice: FakeVoice(words: ['Find my ideas about dog walking.']),
+    );
+    await tester.tap(find.byKey(const Key('search-voice')));
+    await tester.pumpAndSettle();
+    expect(store.query, 'dog walking');
+    expect(find.text('Dog walker marketplace'), findsOneWidget);
+    expect(find.text('Invoice chaser'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('search-clear')));
+    await tester.pumpAndSettle();
+    expect(find.text('Invoice chaser'), findsOneWidget);
+  });
+
+  testWidgets('should match typed search words in any order', (tester) async {
+    await _pump(tester, seed: [
+      Idea.create(title: 'Dog walker marketplace', notes: 'Owners book by the hour'),
+      Idea.create(title: 'Invoice chaser'),
+    ]);
+    await tester.enterText(find.byKey(const Key('search')), 'hour dogs');
+    await tester.pumpAndSettle();
+    expect(find.text('Dog walker marketplace'), findsOneWidget);
+    expect(find.text('Invoice chaser'), findsNothing);
   });
 }

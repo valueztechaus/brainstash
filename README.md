@@ -15,10 +15,10 @@ through stages until one is ready to become a project.
 ## Features
 
 - **Two-tap capture** — tap **+**, type a title, save. Notes, kind, gut feel and tags are optional.
-- **Voice capture** — tap the mic and just talk. Recognition runs **on-device**; the first sentence becomes the title.
+- **Voice capture** — tap the mic and just talk; pauses to think are fine. Say **“save the idea”** when you're done and it saves itself. Recognition runs **on-device**; the first sentence becomes the title.
 - **Kinds** — Product · Service · Problem · Other, with filter chips and counts.
 - **Stages** — Spark → Exploring → Ready → Building → Shelved.
-- **Search** across titles, notes, next steps and `#tags`.
+- **Search by text or voice** — tap the mic in the search bar and say “find ideas about invoices”. Words match in any order and loosely (“walking” finds “walker”) across titles, notes, next steps, `#tags`, kinds and stages.
 - **Star** the ones that matter; starred float to the top.
 - **Next step** field so every idea has a smallest move forward.
 - **Share** a single idea as text, or **export everything** as JSON.

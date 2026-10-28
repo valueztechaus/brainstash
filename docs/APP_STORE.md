@@ -50,10 +50,10 @@ Product → Archive → Distribute.
   > services to offer, problems worth solving.
   >
   > • Capture in seconds: tap +, type a title, done.
-  > • Or tap the mic and just talk — speech is recognised on your iPhone, never in the cloud.
+  > • Or tap the mic and just talk, then say “save the idea” — hands-free. Speech is recognised on your iPhone, never in the cloud.
   > • Sort ideas by kind: Product, Service, Problem, Other.
   > • Move ideas through stages: Spark, Exploring, Ready, Building, Shelved.
-  > • Search notes and #tags, star your favourites.
+  > • Search by typing or by voice, star your favourites.
   > • Add a "next step" so good ideas keep moving.
   > • Optional Face ID lock.
   >
