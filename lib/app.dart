@@ -2,35 +2,46 @@ import 'package:flutter/material.dart';
 
 import 'screens/inbox_screen.dart';
 import 'services/app_lock.dart';
+import 'services/voice_input.dart';
 import 'state/idea_store.dart';
 import 'theme.dart';
 import 'widgets/brand_mark.dart';
 
 /// Gives every screen access to the store and lock without a DI package.
 class AppScope extends InheritedWidget {
-  const AppScope({super.key, required this.store, required this.lock, required super.child});
+  const AppScope({
+    super.key,
+    required this.store,
+    required this.lock,
+    required this.voice,
+    required super.child,
+  });
 
   final IdeaStore store;
   final AppLock lock;
+  final VoiceInput voice;
 
   static AppScope of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<AppScope>()!;
 
   @override
-  bool updateShouldNotify(AppScope old) => old.store != store || old.lock != lock;
+  bool updateShouldNotify(AppScope old) =>
+      old.store != store || old.lock != lock || old.voice != voice;
 }
 
 class BrainstashApp extends StatelessWidget {
-  const BrainstashApp({super.key, required this.store, required this.lock});
+  const BrainstashApp({super.key, required this.store, required this.lock, required this.voice});
 
   final IdeaStore store;
   final AppLock lock;
+  final VoiceInput voice;
 
   @override
   Widget build(BuildContext context) {
     return AppScope(
       store: store,
       lock: lock,
+      voice: voice,
       child: MaterialApp(
         title: 'Brainstash',
         debugShowCheckedModeBanner: false,

@@ -19,6 +19,7 @@ snapshots, keyboard learning caches, leaked secrets in the public repo, vulnerab
 | App lock | Optional Face ID/Touch ID/passcode; re-lock on background; fail closed |
 | App switcher | Native cover on `UIScene.willDeactivate` + Flutter cover |
 | Keyboard | Autocorrect/suggestions disabled on idea fields |
+| Voice | On-device speech recognition only (`requiresOnDeviceRecognition`); audio never stored or transmitted; mic/speech permission strings explain this |
 | Network | None. No ATS exceptions. Fonts bundled |
 | Input validation | Length caps & tag sanitising in `Idea` model (all construction paths) |
 | Export | Re-auth when locked; temp file deleted after share + swept at launch |

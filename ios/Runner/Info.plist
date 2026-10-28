@@ -32,6 +32,10 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Brainstash uses Face ID to keep your ideas private.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Brainstash uses the microphone so you can dictate ideas. Audio is processed on your iPhone and never stored or sent anywhere.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Brainstash turns your voice into text on your iPhone. Speech is never sent to Apple or anyone else.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -11,6 +11,7 @@ Everything below is prepared except the steps that need your Apple ID (marked �
 | Display name | Brainstash | ✅ |
 | Version | `1.0.0 (1)` — from `pubspec.yaml` `version:` | ✅ |
 | Face ID usage string | `Info.plist` `NSFaceIDUsageDescription` | ✅ |
+| Mic + speech usage strings | `NSMicrophoneUsageDescription`, `NSSpeechRecognitionUsageDescription` | ✅ |
 | Export compliance | `ITSAppUsesNonExemptEncryption = NO` (see note) | ✅ |
 | Privacy manifest | `ios/Runner/PrivacyInfo.xcprivacy` — no tracking, no data collected | ✅ |
 | Data Protection | `Runner.entitlements` → `NSFileProtectionComplete` | ✅ |
@@ -49,6 +50,7 @@ Product → Archive → Distribute.
   > services to offer, problems worth solving.
   >
   > • Capture in seconds: tap +, type a title, done.
+  > • Or tap the mic and just talk — speech is recognised on your iPhone, never in the cloud.
   > • Sort ideas by kind: Product, Service, Problem, Other.
   > • Move ideas through stages: Spark, Exploring, Ready, Building, Shelved.
   > • Search notes and #tags, star your favourites.

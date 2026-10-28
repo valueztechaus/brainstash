@@ -24,7 +24,7 @@ others can use and fork it.
 - Cloud sync, accounts, collaboration.
 - AI summarisation / auto-tagging.
 - Android build (Flutter makes it possible later; not tested now).
-- Voice capture (good v2 candidate — see design canvas notes).
+- ~~Voice capture~~ — added 2026-10-28 at owner's request, see *Voice capture* below.
 
 ## Anti-goals (failure even if it "works")
 
@@ -57,6 +57,17 @@ others can use and fork it.
    iOS share sheet), delete with confirm.
 4. **Settings** — Face ID / passcode lock toggle, export all (JSON via share sheet),
    delete all data, about/licence.
+
+## Voice capture (added 2026-10-28)
+
+- Mic button on the inbox (above +) opens the capture sheet already listening; mic toggle also
+  inside the sheet next to "Dump it here".
+- Live transcript streams into notes (appended after any typed notes). If the title was empty when
+  dictation started, it is set to the first sentence (capitalised, ≤ 60 chars).
+- **On-device only:** `SFSpeechRecognizer` with `requiresOnDeviceRecognition = true`
+  (`speech_to_text` `onDevice: true`). No server fallback. Audio is not recorded or stored.
+- Clear messages for permission denied / on-device unavailable / nothing heard.
+- Session stops after 4 s of silence or 2 min; cancelled if the sheet closes.
 
 ## Security design
 

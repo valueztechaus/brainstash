@@ -1,5 +1,5 @@
 Starting filesystem walk for root: /
-Scanned pubspec.lock file and found 92 packages
-End status: 0 dirs visited, 1 inodes visited, 1 Extract calls, 559.292µs elapsed, 560µs wall time
+Scanned pubspec.lock file and found 95 packages
+End status: 0 dirs visited, 1 inodes visited, 1 Extract calls, 1.602ms elapsed, 1.602ms wall time
 
 No issues found

@@ -35,3 +35,6 @@ marked otherwise.
 | D27 | Release builds strip symbols (dSYM kept) | MobSF warning; smaller binary, harder reverse engineering. | — |
 | D28 | MobSF `@rpath` / malloc / insecure-API warnings accepted | They come from the Flutter engine and framework embedding and can't be removed in a Flutter app. | Native rewrite |
 | D29 | Security-review sub-agent ran on Sonnet 5.5 (agent definition default), not Opus | Oversight: the owner asked for Opus throughout and the model wasn't overridden. Its findings were all verified and fixed by the main Opus session, with tests. ~0.6% of tokens. | Re-run on Opus (offered) |
+| D30 | Voice capture uses **on-device** Apple speech recognition only, no server fallback | Keeps the "nothing leaves the phone" promise (spec anti-goal: no network). Trade-off: unavailable on languages/devices without on-device models — user is told plainly. | Apple server recognition; Whisper model bundled (+~75 MB) |
+| D31 | `speech_to_text` 7.5.0 plugin | Thin wrapper over `SFSpeechRecognizer`, sets `requiresOnDeviceRecognition`, no networking code (verified in source). | Custom platform channel |
+| D32 | Mic FAB on inbox + mic toggle in capture sheet; first sentence → title only if title empty | Fastest path from thought to saved idea, never overwrites what the user typed. | Separate voice screen |

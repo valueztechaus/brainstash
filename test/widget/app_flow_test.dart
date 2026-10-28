@@ -3,15 +3,46 @@ import 'package:brainstash/data/idea_repository.dart';
 import 'package:brainstash/data/key_store.dart';
 import 'package:brainstash/models/idea.dart';
 import 'package:brainstash/services/app_lock.dart';
+import 'package:brainstash/services/voice_input.dart';
 import 'package:brainstash/state/idea_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+class FakeVoice implements VoiceInput {
+  FakeVoice({this.status = VoiceStatus.idle, this.words = const [], this.endWith = VoiceStatus.idle});
+
+  final VoiceStatus status;
+  final List<String> words;
+  final VoiceStatus endWith;
+  bool cancelled = false;
+
+  @override
+  Future<VoiceStatus> prepare() async => status;
+
+  @override
+  Future<void> start({
+    required ValueChanged<String> onText,
+    required ValueChanged<VoiceStatus> onDone,
+  }) async {
+    for (final w in words) {
+      onText(w);
+    }
+    onDone(endWith);
+  }
+
+  @override
+  Future<void> stop() async {}
+
+  @override
+  Future<void> cancel() async => cancelled = true;
+}
 
 Future<(IdeaStore, AppLock)> _pump(
   WidgetTester tester, {
   List<Idea> seed = const [],
   bool lockEnabled = false,
   bool authResult = true,
+  VoiceInput? voice,
 }) async {
   tester.view.physicalSize = const Size(1170, 2532);
   tester.view.devicePixelRatio = 3;
@@ -26,7 +57,7 @@ Future<(IdeaStore, AppLock)> _pump(
   );
   await store.load();
   await lock.init();
-  await tester.pumpWidget(BrainstashApp(store: store, lock: lock));
+  await tester.pumpWidget(BrainstashApp(store: store, lock: lock, voice: voice ?? FakeVoice()));
   await tester.pumpAndSettle();
   return (store, lock);
 }
@@ -130,5 +161,52 @@ void main() {
   testWidgets('should unlock when auth succeeds', (tester) async {
     await _pump(tester, seed: [Idea.create(title: 'Secret')], lockEnabled: true);
     expect(find.text('Secret').hitTestable(), findsOneWidget);
+  });
+
+  testWidgets('should fill title and notes from voice and save', (tester) async {
+    final voice = FakeVoice(words: [
+      'Voice log',
+      'Voice log for field crews. They wear gloves.',
+    ]);
+    final (store, _) = await _pump(tester, voice: voice);
+    await tester.tap(find.byKey(const Key('voice-fab')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Voice log for field crews'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('capture-save')));
+    await tester.pumpAndSettle();
+    final saved = store.visible.single;
+    expect(saved.title, 'Voice log for field crews');
+    expect(saved.notes, 'Voice log for field crews. They wear gloves.');
+  });
+
+  testWidgets('should not overwrite a typed title or notes when dictating', (tester) async {
+    final (store, _) = await _pump(tester, voice: FakeVoice(words: ['extra thoughts']));
+    await tester.tap(find.byKey(const Key('capture-fab')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('capture-title')), 'My title');
+    await tester.enterText(find.byKey(const Key('capture-notes')), 'Typed first');
+    await tester.tap(find.byKey(const Key('voice-button')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('capture-save')));
+    await tester.pumpAndSettle();
+    final saved = store.visible.single;
+    expect(saved.title, 'My title');
+    expect(saved.notes, 'Typed first\n\nextra thoughts');
+  });
+
+  testWidgets('should explain when on-device speech is unavailable', (tester) async {
+    await _pump(tester, voice: FakeVoice(status: VoiceStatus.unavailable));
+    await tester.tap(find.byKey(const Key('voice-fab')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('never sent off your phone'), findsOneWidget);
+    expect(tester.widget<TextButton>(find.byKey(const Key('capture-save'))).onPressed, isNull);
+  });
+
+  testWidgets('should point to Settings when permission denied', (tester) async {
+    await _pump(tester, voice: FakeVoice(status: VoiceStatus.denied));
+    await tester.tap(find.byKey(const Key('voice-fab')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('iOS Settings'), findsOneWidget);
   });
 }

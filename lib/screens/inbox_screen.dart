@@ -17,14 +17,30 @@ class InboxScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final store = AppScope.of(context).store;
     return Scaffold(
-      floatingActionButton: SizedBox.square(
-        dimension: 64,
-        child: FloatingActionButton(
-          key: const Key('capture-fab'),
-          tooltip: 'Capture new idea',
-          onPressed: () => showCaptureSheet(context),
-          child: const Icon(Icons.add_rounded, size: 30),
-        ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.small(
+            key: const Key('voice-fab'),
+            heroTag: 'voice',
+            tooltip: 'Capture by voice',
+            backgroundColor: AppColors.surfaceHigh,
+            foregroundColor: AppColors.amber,
+            onPressed: () => showCaptureSheet(context, voice: true),
+            child: const Icon(Icons.mic_rounded),
+          ),
+          const SizedBox(height: 14),
+          SizedBox.square(
+            dimension: 64,
+            child: FloatingActionButton(
+              key: const Key('capture-fab'),
+              heroTag: 'capture',
+              tooltip: 'Capture new idea',
+              onPressed: () => showCaptureSheet(context),
+              child: const Icon(Icons.add_rounded, size: 30),
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         bottom: false,

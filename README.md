@@ -15,6 +15,7 @@ through stages until one is ready to become a project.
 ## Features
 
 - **Two-tap capture** — tap **+**, type a title, save. Notes, kind, gut feel and tags are optional.
+- **Voice capture** — tap the mic and just talk. Recognition runs **on-device**; the first sentence becomes the title.
 - **Kinds** — Product · Service · Problem · Other, with filter chips and counts.
 - **Stages** — Spark → Exploring → Ready → Building → Shelved.
 - **Search** across titles, notes, next steps and `#tags`.
@@ -28,6 +29,7 @@ through stages until one is ready to become a project.
 - Ideas are stored **only on your device**, encrypted with **AES-256**. The key lives in the iOS
   Keychain (`first_unlock_this_device` — never synced, never in backups).
 - iOS **Data Protection: Complete** on the app's files.
+- Voice dictation uses Apple's on-device speech recognition only — audio never leaves the phone and is never stored.
 - **No network access, no analytics, no accounts, no third-party SDKs that phone home.**
   Fonts are bundled.
 - Automated scans on every change: gitleaks, osv-scanner, semgrep, plus MobSF on the built app.

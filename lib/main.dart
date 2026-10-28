@@ -7,6 +7,7 @@ import 'app.dart';
 import 'data/idea_repository.dart';
 import 'data/key_store.dart';
 import 'services/app_lock.dart';
+import 'services/voice_input.dart';
 import 'state/idea_store.dart';
 
 Future<void> main() async {
@@ -46,7 +47,7 @@ Future<void> start() async {
   final store = IdeaStore(repo);
   final lock = AppLock(keyStore: keyStore);
   await Future.wait([store.load(), lock.init()]);
-  runApp(BrainstashApp(store: store, lock: lock));
+  runApp(BrainstashApp(store: store, lock: lock, voice: OnDeviceVoiceInput()));
 }
 
 /// Exports are plaintext; remove any left behind if the app was killed mid-share.
