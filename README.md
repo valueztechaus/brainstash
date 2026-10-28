@@ -54,6 +54,9 @@ flutter run                  # runs on the booted iOS simulator
 flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart
 ```
 
+> **Note:** `flutter drive` installs a *test* build that ignores real taps. Run `flutter run`
+> afterwards to put the normal app back on the simulator.
+
 Install on your own iPhone: open `ios/Runner.xcworkspace` in Xcode → *Signing & Capabilities* →
 pick your team → change the bundle id from `com.valueztech.brainstash` to your own → Run.
 
